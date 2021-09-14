@@ -1,6 +1,8 @@
 import Head from 'next/head'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import ReportTable from '../components/ReportTable'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 export default function Home() {
   const [show,setShow]=useState('EMPTY')
@@ -9,13 +11,11 @@ export default function Home() {
   const [max,setmax]=useState(0)
   const [avg,setavg]=useState(0)
   const[Branches, setBranch]=useState([])
-  function formHandler(event){
+  function onCreate(event){
     event.preventDefault()
     const Branche={
       location:event.target.location.value,
-      minCustomer:event.target.min.value,
-      maxCustomer:event.target.max.value,
-      avgCookies:event.target.avg.value
+      hourly_sales:[48, 42, 30, 24, 42, 24, 36, 42, 42, 48, 36, 42, 24, 36]
     }
     setShow((show)=>{
         return JSON.stringify(Branche)
@@ -32,11 +32,10 @@ export default function Home() {
     setavg(()=>{
       return Branche.avg
     })
-    console.log(show)
+    // console.log(show)
     setBranch((Branches)=>{
-      console.log(Branche)
-      Branches.push(Branche)
-      return Branches
+      // console.log(Branche)
+      return [...Branches,Branche]
     });
     console.log(Branches)
   }
@@ -49,7 +48,7 @@ export default function Home() {
       <Header></Header>
       <main className="flex flex-col items-center justify-center flex-1 w-full px-20 text-center">
        <div>
-         <form className='p-6 bg-green-300 rounded-2xl' onSubmit={formHandler} >
+         <form className='p-6 bg-green-300 rounded-2xl' onSubmit={onCreate} >
            <h2>Create Cookie Stand</h2>
             <label>location</label>
             <input type="text" name='location' className='w-9/12 my-3 bg-gray-200' placeholder={location} ></input>
@@ -70,11 +69,17 @@ export default function Home() {
                    <button className='px-8 py-4 bg-green-400' type="submit" >create</button>
                 </div>
             </div>
-            <p>{show}</p>
+            {Branches.length?
+            <ReportTable hours={['6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm']} reports={Branches}>
+              
+            </ReportTable>
+             : <h2>No Cookie Stands Available</h2>
+            }
+            
          </form>
        </div>
       </main>
-      <Footer></Footer>
+      <Footer Branches={Branches}></Footer>
      
     </div>
   )
