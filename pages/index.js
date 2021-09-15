@@ -1,11 +1,9 @@
-import Head from 'next/head'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
-import ReportTable from '../components/ReportTable'
-import Link from 'next/link'
+import CookieStandAdmin from '../components/CookieStandAdmin'
+import { useAuth } from '../contexts/auth'
+import LoginForm from '../components/LoginForm'
+import useResource from '../hooks/useResource'
 import { useEffect, useState } from 'react'
 export default function Home() {
-  const [show,setShow]=useState('EMPTY')
   const [location,setlocation]=useState('')
   const [min,setmin]=useState(0)
   const [max,setmax]=useState(0)
@@ -15,72 +13,52 @@ export default function Home() {
     event.preventDefault()
     const Branche={
       location:event.target.location.value,
-      hourly_sales:[48, 42, 30, 24, 42, 24, 36, 42, 42, 48, 36, 42, 24, 36]
+      hourly_sales:[48, 42, 30, 24, 42, 24, 36, 42, 42, 48, 36, 42, 24, 36],
+      minimum_customers_per_hour : event.target.min.value,
+      maximum_customers_per_hour : event.target.max.value,
+      average_cookies_per_sale : event.target.avg.value,
     }
-    setShow((show)=>{
-        return JSON.stringify(Branche)
-    })
+    createResource(Branche)
+    
     setlocation(()=>{
       return Branche.location
     })
     setmin(()=>{
-      return Branche.min
+      return Branche.minimum_customers_per_hour
     })
     setmax(()=>{
-      return Branche.max
+      return Branche.maximum_customers_per_hour
     })
     setavg(()=>{
-      return Branche.avg
+      return Branche.average_cookies_per_sale
     })
-    // console.log(show)
     setBranch((Branches)=>{
-      // console.log(Branche)
-      return [...Branches,Branche]
+      return resources
     });
-    console.log(Branches)
+    
+
+
+
+
   }
+ 
+  
+  const { user, login, logout } = useAuth();
+  const { resources, loading, createResource, deleteResource , } = useResource(); 
+
+
+  useEffect(() => {
+    if (resources){
+     setBranch( resources)
+    }
+    console.log('hello');
+  }, [resources,Branches])
   return (
-    <div className="flex flex-col justify-center min-h-screen py-2">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Header></Header>
-      <main className="flex flex-col items-center justify-center flex-1 w-full px-20 text-center">
-       <div>
-         <form className='p-6 bg-green-300 rounded-2xl' onSubmit={onCreate} >
-           <h2>Create Cookie Stand</h2>
-            <label>location</label>
-            <input type="text" name='location' className='w-9/12 my-3 bg-gray-200' placeholder={location} ></input>
-            <div className='flex flex-row'>
-                <div className='flex flex-col p-3'>
-                    <label>Minimum customer per Hour</label>
-                    <input type="number" name='min'  className='bg-gray-200'placeholder={min} ></input>
-                </div>
-                <div className='flex flex-col p-3'>
-                    <label>Maximum customer per Hour</label>
-                    <input type="number" name='max' className='bg-gray-200' placeholder={max} ></input>
-                </div>
-                <div className='flex flex-col p-3'>
-                    <label>Avarage Cookies per sale</label>
-                    <input type="number" name='avg'   className='bg-gray-200' step='.1' placeholder={avg}></input>
-                </div>
-                <div className='flex flex-col px-3 '>
-                   <button className='px-8 py-4 bg-green-400' type="submit" >create</button>
-                </div>
-            </div>
-            {Branches.length?
-            <ReportTable hours={['6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm']} reports={Branches}>
-              
-            </ReportTable>
-             : <h2>No Cookie Stands Available</h2>
-            }
-            
-         </form>
-       </div>
-      </main>
-      <Footer Branches={Branches}></Footer>
-     
+    <div>
+      {user? <CookieStandAdmin Branches={Branches} username={user.username} onCreate={onCreate} location={location} min={min} max={max} avg={avg} loading={loading}></CookieStandAdmin> 
+      : <LoginForm login={login}></LoginForm>}
     </div>
   )
 }
+
+
