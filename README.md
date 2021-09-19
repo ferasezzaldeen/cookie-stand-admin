@@ -31,3 +31,8 @@ Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&ut
 
 
 pr link::  https://github.com/ferasezzaldeen/cookie-stand-admin/pull/1
+
+
+
+
+deploy on :: https://cookie-stand-admin-green.vercel.app/
